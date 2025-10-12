@@ -33,6 +33,12 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
+    padding-bottom: 0;
+    transition: padding-bottom 0.3s ease;
+}
+
+body.player-active {
+    padding-bottom: 200px;
 }
 
 .container {
@@ -93,27 +99,65 @@ body {
     letter-spacing: 1.5px;
 }
 
-/* Audio Player */
+/* Audio Player - Fixed at Bottom */
 .audio-player {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     background: var(--white);
-    border-radius: 20px;
-    padding: 24px;
-    margin-bottom: 32px;
-    box-shadow: var(--shadow-lg);
-    border: 1px solid var(--gray-200);
-    animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 20px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    border-top: 1px solid var(--gray-200);
+    z-index: 1000;
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     transition: all 0.3s ease;
+    max-width: 100vw;
 }
 
-@keyframes slideDown {
+.audio-player > * {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+@keyframes slideUp {
     from {
         opacity: 0;
-        transform: translateY(-20px);
+        transform: translateY(100%);
     }
     to {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+.close-player-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--gray-200);
+    border: none;
+    color: var(--gray-700);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.close-player-btn:hover {
+    background: var(--gray-300);
+    color: var(--gray-900);
+    transform: scale(1.05);
+}
+
+.close-player-btn svg {
+    width: 18px;
+    height: 18px;
 }
 
 .player-info {
@@ -445,7 +489,37 @@ body {
     }
 
     .audio-player {
-        padding: 20px;
+        padding: 16px;
+    }
+    
+    body.player-active {
+        padding-bottom: 180px;
+    }
+    
+    .player-info {
+        margin-bottom: 12px;
+    }
+    
+    .player-title {
+        font-size: 18px;
+    }
+    
+    .player-date {
+        font-size: 13px;
+    }
+    
+    .play-pause-btn {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .play-pause-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .time-display {
+        font-size: 13px;
     }
 }
 

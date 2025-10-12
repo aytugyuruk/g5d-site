@@ -22,33 +22,6 @@
     <!-- Main Content -->
     <main class="main-content">
         <div class="container">
-            <!-- Audio Player (Fixed at top when playing) -->
-            <div id="audioPlayer" class="audio-player hidden">
-                <div class="player-info">
-                    <h3 id="playerTitle" class="player-title">Kategori</h3>
-                    <p id="playerDate" class="player-date">Bugünün özeti</p>
-                </div>
-                <div class="player-controls">
-                    <button id="playPauseBtn" class="play-pause-btn">
-                        <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M8 5v14l11-7z"/>
-                        </svg>
-                        <svg class="pause-icon hidden" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
-                        </svg>
-                    </button>
-                    <div class="time-display">
-                        <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
-                    </div>
-                </div>
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div id="progressFill" class="progress-fill"></div>
-                    </div>
-                </div>
-                <audio id="audioElement"></audio>
-            </div>
-
             <!-- Category Cards -->
             <div class="categories-container">
                 <h2 class="section-title">Kategoriler</h2>
@@ -140,6 +113,38 @@
             </div>
         </div>
     </main>
+
+    <!-- Fixed Audio Player at Bottom -->
+    <div id="audioPlayer" class="audio-player hidden">
+        <button id="closePlayerBtn" class="close-player-btn" title="Kapat">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </svg>
+        </button>
+        <div class="player-info">
+            <h3 id="playerTitle" class="player-title">Kategori</h3>
+            <p id="playerDate" class="player-date">Bugünün özeti</p>
+        </div>
+        <div class="player-controls">
+            <button id="playPauseBtn" class="play-pause-btn">
+                <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+                <svg class="pause-icon hidden" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+                </svg>
+            </button>
+            <div class="time-display">
+                <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+            </div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+        </div>
+        <audio id="audioElement"></audio>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">

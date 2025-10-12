@@ -21,6 +21,7 @@ let isPlaying = false;
 const audioElement = document.getElementById('audioElement');
 const audioPlayer = document.getElementById('audioPlayer');
 const playPauseBtn = document.getElementById('playPauseBtn');
+const closePlayerBtn = document.getElementById('closePlayerBtn');
 const playerTitle = document.getElementById('playerTitle');
 const playerDate = document.getElementById('playerDate');
 const currentTimeEl = document.getElementById('currentTime');
@@ -59,6 +60,7 @@ function initializeEventListeners() {
 
     // Audio player controls
     playPauseBtn.addEventListener('click', togglePlayPause);
+    closePlayerBtn.addEventListener('click', closePlayer);
     
     audioElement.addEventListener('timeupdate', updateProgress);
     audioElement.addEventListener('loadedmetadata', updateDuration);
@@ -146,6 +148,7 @@ async function loadAndPlayAudio(category) {
         
         // Show player
         audioPlayer.classList.remove('hidden');
+        document.body.classList.add('player-active');
         
         // Play audio
         await audioElement.play();
@@ -153,9 +156,6 @@ async function loadAndPlayAudio(category) {
         // Hide loading, show play button
         playButton.classList.remove('hidden');
         loadingIndicator.classList.add('hidden');
-
-        // Scroll to player
-        audioPlayer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
     } catch (error) {
         console.error('Error loading audio:', error);
@@ -179,6 +179,16 @@ function togglePlayPause() {
     } else {
         audioElement.play();
     }
+}
+
+// Close player
+function closePlayer() {
+    audioElement.pause();
+    audioElement.currentTime = 0;
+    audioPlayer.classList.add('hidden');
+    document.body.classList.remove('player-active');
+    isPlaying = false;
+    updatePlayPauseIcon();
 }
 
 // Update play/pause icon
