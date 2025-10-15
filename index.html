@@ -167,6 +167,11 @@
             <p id="playerDate" class="player-date">Bugünün özeti</p>
         </div>
         <div class="player-controls">
+            <button id="skipBackBtn" class="skip-btn" title="15 saniye geri">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+                </svg>
+            </button>
             <button id="playPauseBtn" class="play-pause-btn">
                 <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M8 5v14l11-7z"/>
@@ -175,8 +180,18 @@
                     <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
                 </svg>
             </button>
+            <button id="skipForwardBtn" class="skip-btn" title="15 saniye ileri">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+                </svg>
+            </button>
             <div class="time-display">
                 <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+            </div>
+            <div class="speed-control">
+                <button id="speedBtn" class="speed-btn" title="Oynatma hızı">
+                    <span id="speedText">1x</span>
+                </button>
             </div>
         </div>
         <div class="progress-container">

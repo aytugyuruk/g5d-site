@@ -16,12 +16,17 @@ const CATEGORY_MAPPING = {
 let currentAudio = null;
 let currentCategory = null;
 let isPlaying = false;
+let playbackSpeed = 1.0;
 
 // DOM Elements
 const audioElement = document.getElementById('audioElement');
 const audioPlayer = document.getElementById('audioPlayer');
 const playPauseBtn = document.getElementById('playPauseBtn');
 const closePlayerBtn = document.getElementById('closePlayerBtn');
+const skipBackBtn = document.getElementById('skipBackBtn');
+const skipForwardBtn = document.getElementById('skipForwardBtn');
+const speedBtn = document.getElementById('speedBtn');
+const speedText = document.getElementById('speedText');
 const playerTitle = document.getElementById('playerTitle');
 const playerDate = document.getElementById('playerDate');
 const currentTimeEl = document.getElementById('currentTime');
@@ -61,6 +66,9 @@ function initializeEventListeners() {
     // Audio player controls
     playPauseBtn.addEventListener('click', togglePlayPause);
     closePlayerBtn.addEventListener('click', closePlayer);
+    skipBackBtn.addEventListener('click', skipBackward);
+    skipForwardBtn.addEventListener('click', skipForward);
+    speedBtn.addEventListener('click', togglePlaybackSpeed);
     
     audioElement.addEventListener('timeupdate', updateProgress);
     audioElement.addEventListener('loadedmetadata', updateDuration);
@@ -242,6 +250,31 @@ function onAudioEnded() {
     currentTimeEl.textContent = '0:00';
 }
 
+// Skip backward 15 seconds
+function skipBackward() {
+    if (audioElement.src) {
+        audioElement.currentTime = Math.max(0, audioElement.currentTime - 15);
+    }
+}
+
+// Skip forward 15 seconds
+function skipForward() {
+    if (audioElement.src) {
+        audioElement.currentTime = Math.min(audioElement.duration, audioElement.currentTime + 15);
+    }
+}
+
+// Toggle playback speed
+function togglePlaybackSpeed() {
+    const speeds = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0];
+    const currentIndex = speeds.indexOf(playbackSpeed);
+    const nextIndex = (currentIndex + 1) % speeds.length;
+    
+    playbackSpeed = speeds[nextIndex];
+    audioElement.playbackRate = playbackSpeed;
+    speedText.textContent = playbackSpeed + 'x';
+}
+
 // Check audio availability (optional feature)
 async function checkAudioAvailability() {
     const categories = ['gundem', 'ekonomi', 'spor', 'magazin', 'politika'];
@@ -271,10 +304,16 @@ document.addEventListener('keydown', (e) => {
             togglePlayPause();
         }
         if (e.code === 'ArrowLeft') {
-            audioElement.currentTime = Math.max(0, audioElement.currentTime - 10);
+            e.preventDefault();
+            skipBackward();
         }
         if (e.code === 'ArrowRight') {
-            audioElement.currentTime = Math.min(audioElement.duration, audioElement.currentTime + 10);
+            e.preventDefault();
+            skipForward();
+        }
+        if (e.code === 'KeyS' && e.target === document.body) {
+            e.preventDefault();
+            togglePlaybackSpeed();
         }
     }
 });
