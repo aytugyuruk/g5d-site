@@ -3,19 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Günlük haberleri 5 dakikada sesli dinleyin">
-    <title>Gündem 5 Dakika - Günlük Sesli Haber</title>
-    <link rel="stylesheet" href="style.css">
+    
+    <!-- SEO Meta Etiketleri -->
+    <title>Gündem 5 Dakika - Kısa Sesli Haberler</title>
+    <meta name="description" content="5 dakikada günün en önemli haberlerini sesli özetlerle takip edin. Genel, Spor, Siyaset ve daha fazlası burada." />
+    <meta name="keywords" content="gündem 5 dakika, sesli haber özeti, günün özeti, kısa haberler, sesli haberler, güncel haberler, haber özetleri" />
+    
+    <!-- Open Graph Meta Etiketleri (Sosyal Medya Paylaşımları İçin) -->
+    <meta property="og:title" content="Gündem 5 Dakika - Kısa Sesli Haberler" />
+    <meta property="og:description" content="5 dakikada günün en önemli haberlerini sesli özetlerle takip edin." />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="tr_TR" />
+    
+    <!-- Twitter Card Meta Etiketleri -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Gündem 5 Dakika - Kısa Sesli Haberler" />
+    <meta name="twitter:description" content="5 dakikada günün en önemli haberlerini sesli özetlerle takip edin." />
+    
+    <!-- Font Preconnections -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Dosyası -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Gündem 5 Dakika",
+      "alternateName": "Gündem5Dk",
+      "url": "https://gundem5dakika.com",
+      "description": "5 dakikada günün en önemli haberlerini sesli özetlerle takip edin. Genel, Spor, Siyaset ve daha fazlası burada.",
+      "inLanguage": "tr-TR",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Gündem 5 Dakika",
+        "url": "https://gundem5dakika.com"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://gundem5dakika.com/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
 </head>
 <body>
     <!-- Header -->
     <header class="header">
         <div class="container">
             <h1 class="site-title">Gündem 5 Dakika</h1>
-            <p class="site-subtitle">Günlük haberleri 5 dakikada dinle</p>
+            <p class="site-subtitle">5 dakikada günün en önemli haberlerini sesli özetlerle takip edin</p>
         </div>
     </header>
 
@@ -43,23 +84,6 @@
                     <div class="loading-indicator hidden">Yükleniyor...</div>
                 </div>
 
-                <div class="category-card" data-category="ekonomi">
-                    <div class="card-header">
-                        <div class="category-icon">💼</div>
-                        <div class="category-info">
-                            <h3 class="category-title">Ekonomi</h3>
-                            <p class="category-desc">Piyasalar ve ekonomi haberleri</p>
-                        </div>
-                    </div>
-                    <button class="play-button" data-category="ekonomi">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M8 5v14l11-7z"/>
-                        </svg>
-                        <span>Dinle</span>
-                    </button>
-                    <div class="loading-indicator hidden">Yükleniyor...</div>
-                </div>
-
                 <div class="category-card" data-category="spor">
                     <div class="card-header">
                         <div class="category-icon">⚽</div>
@@ -77,15 +101,15 @@
                     <div class="loading-indicator hidden">Yükleniyor...</div>
                 </div>
 
-                <div class="category-card" data-category="magazin">
+                <div class="category-card" data-category="politika">
                     <div class="card-header">
-                        <div class="category-icon">🎬</div>
+                        <div class="category-icon">🏛️</div>
                         <div class="category-info">
-                            <h3 class="category-title">Magazin</h3>
-                            <p class="category-desc">Ünlüler ve magazin haberleri</p>
+                            <h3 class="category-title">Siyaset</h3>
+                            <p class="category-desc">Güncel siyasi gelişmeler</p>
                         </div>
                     </div>
-                    <button class="play-button" data-category="magazin">
+                    <button class="play-button" data-category="politika">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path d="M8 5v14l11-7z"/>
                         </svg>
@@ -94,15 +118,32 @@
                     <div class="loading-indicator hidden">Yükleniyor...</div>
                 </div>
 
-                <div class="category-card" data-category="politika">
+                <div class="category-card" data-category="ekonomi">
                     <div class="card-header">
-                        <div class="category-icon">🏛️</div>
+                        <div class="category-icon">💰</div>
                         <div class="category-info">
-                            <h3 class="category-title">Politika</h3>
-                            <p class="category-desc">Güncel siyasi gelişmeler</p>
+                            <h3 class="category-title">Ekonomi</h3>
+                            <p class="category-desc">Piyasalar ve ekonomi haberleri</p>
                         </div>
                     </div>
-                    <button class="play-button" data-category="politika">
+                    <button class="play-button" data-category="ekonomi">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                        <span>Dinle</span>
+                    </button>
+                    <div class="loading-indicator hidden">Yükleniyor...</div>
+                </div>
+
+                <div class="category-card" data-category="magazin">
+                    <div class="card-header">
+                        <div class="category-icon">🎭</div>
+                        <div class="category-info">
+                            <h3 class="category-title">Magazin</h3>
+                            <p class="category-desc">Magazin haberleri</p>
+                        </div>
+                    </div>
+                    <button class="play-button" data-category="magazin">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path d="M8 5v14l11-7z"/>
                         </svg>
