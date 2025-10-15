@@ -44,22 +44,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Event Listeners
 function initializeEventListeners() {
-    // Play buttons on category cards
-    const playButtons = document.querySelectorAll('.play-button');
-    playButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const category = button.dataset.category;
-            loadAndPlayAudio(category);
-        });
-    });
-
     // Category cards (clicking anywhere on card)
     const categoryCards = document.querySelectorAll('.category-card');
     categoryCards.forEach(card => {
         card.addEventListener('click', () => {
             const category = card.dataset.category;
-            loadAndPlayAudio(category);
+            if (category) {
+                loadAndPlayAudio(category);
+            } else if (card.classList.contains('contact-card')) {
+                // Handle contact card click
+                window.location.href = 'mailto:info@gundem5dakika.com';
+            }
         });
     });
 
@@ -112,10 +107,8 @@ async function loadAndPlayAudio(category) {
     try {
         // Show loading state
         const card = document.querySelector(`.category-card[data-category="${category}"]`);
-        const playButton = card.querySelector('.play-button');
         const loadingIndicator = card.querySelector('.loading-indicator');
         
-        playButton.classList.add('hidden');
         loadingIndicator.classList.remove('hidden');
 
         // Get audio URL
@@ -161,19 +154,16 @@ async function loadAndPlayAudio(category) {
         // Play audio
         await audioElement.play();
         
-        // Hide loading, show play button
-        playButton.classList.remove('hidden');
+        // Hide loading
         loadingIndicator.classList.add('hidden');
 
     } catch (error) {
         console.error('Error loading audio:', error);
         
-        // Hide loading, show play button
+        // Hide loading
         const card = document.querySelector(`.category-card[data-category="${category}"]`);
-        const playButton = card.querySelector('.play-button');
         const loadingIndicator = card.querySelector('.loading-indicator');
         
-        playButton.classList.remove('hidden');
         loadingIndicator.classList.add('hidden');
         
         alert('Bugün için bu kategoride henüz haber yok. Lütfen daha sonra tekrar deneyin.');
