@@ -98,23 +98,20 @@
 
         /* News Items Styling - Simple */
         .news-item {
-            margin: 24px 0;
-            padding: 0;
+            margin: 20px 0;
+            padding: 16px 0;
+            border-bottom: 1px solid #e2e8f0;
         }
 
-        .news-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #1e293b;
-            margin: 0 0 8px 0;
-            line-height: 1.4;
+        .news-item:last-child {
+            border-bottom: none;
         }
 
         .news-content {
-            color: #64748b;
+            color: #1e293b;
             line-height: 1.6;
             margin: 0;
-            font-size: 0.95rem;
+            font-size: 1rem;
         }
 
         .section-title {
@@ -191,15 +188,12 @@
             }
             
             .news-item {
-                margin: 20px 0;
-            }
-            
-            .news-title {
-                font-size: 1rem;
+                margin: 16px 0;
+                padding: 12px 0;
             }
             
             .news-content {
-                font-size: 0.9rem;
+                font-size: 0.95rem;
             }
             
             .section-title {
@@ -323,7 +317,6 @@
             const lines = text.split('\n').filter(line => line.trim());
             
             let formattedContent = '';
-            let currentSection = '';
             
             lines.forEach(line => {
                 const trimmed = line.trim();
@@ -333,22 +326,12 @@
                 if (trimmed.startsWith('- ')) {
                     const newsContent = trimmed.substring(2); // Remove "- "
                     
-                    // Extract title and content
-                    const parts = newsContent.split('. ');
-                    if (parts.length >= 2) {
-                        const title = parts[0];
-                        const content = parts.slice(1).join('. ');
-                        
-                        formattedContent += `
-                            <div class="news-item">
-                                <h3 class="news-title">${title}</h3>
-                                <p class="news-content">${content}</p>
-                            </div>
-                        `;
-                    } else {
-                        // If no clear title, treat as paragraph
-                        formattedContent += `<p class="news-content">${newsContent}</p>`;
-                    }
+                    // Always create a news item, regardless of title structure
+                    formattedContent += `
+                        <div class="news-item">
+                            <p class="news-content">${newsContent}</p>
+                        </div>
+                    `;
                 } else if (trimmed.startsWith('#')) {
                     // Markdown style heading
                     formattedContent += `<h2 class="section-title">${trimmed.replace('#', '').trim()}</h2>`;
