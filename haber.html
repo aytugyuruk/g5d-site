@@ -100,6 +100,54 @@
             margin: 24px 0 12px 0;
         }
 
+        /* News Items Styling */
+        .news-item {
+            background: #f8fafc;
+            border-left: 4px solid #333366;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .news-item:hover {
+            background: #f1f5f9;
+            transform: translateX(4px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .news-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #333366;
+            margin: 0 0 12px 0;
+            font-family: "Merriweather", serif;
+            line-height: 1.4;
+        }
+
+        .news-content {
+            color: #374151;
+            line-height: 1.7;
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333366;
+            margin: 40px 0 20px 0;
+            font-family: "Merriweather", serif;
+            text-align: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .section-title:first-child {
+            margin-top: 0;
+        }
+
         .loading {
             text-align: center;
             padding: 60px 20px;
@@ -195,6 +243,24 @@
             
             .article-content {
                 font-size: 1rem;
+            }
+            
+            .news-item {
+                padding: 16px;
+                margin: 16px 0;
+            }
+            
+            .news-title {
+                font-size: 1.1rem;
+            }
+            
+            .news-content {
+                font-size: 0.95rem;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+                margin: 30px 0 16px 0;
             }
         }
     </style>
@@ -310,20 +376,42 @@
 
         // Format text content
         function formatTextContent(text) {
-            // Split by double line breaks to create paragraphs
-            const paragraphs = text.split('\n\n').filter(p => p.trim());
+            // Split by lines and process each line
+            const lines = text.split('\n').filter(line => line.trim());
             
             let formattedContent = '';
+            let currentSection = '';
             
-            paragraphs.forEach(paragraph => {
-                const trimmed = paragraph.trim();
-                if (trimmed) {
-                    // Check if it's a heading (starts with # or is short and bold)
-                    if (trimmed.startsWith('#') || (trimmed.length < 100 && trimmed.includes(':'))) {
-                        formattedContent += `<h2>${trimmed.replace('#', '').trim()}</h2>`;
+            lines.forEach(line => {
+                const trimmed = line.trim();
+                if (!trimmed) return;
+                
+                // Check if it's a news item (starts with -)
+                if (trimmed.startsWith('- ')) {
+                    const newsContent = trimmed.substring(2); // Remove "- "
+                    
+                    // Extract title and content
+                    const parts = newsContent.split('. ');
+                    if (parts.length >= 2) {
+                        const title = parts[0];
+                        const content = parts.slice(1).join('. ');
+                        
+                        formattedContent += `
+                            <div class="news-item">
+                                <h3 class="news-title">${title}</h3>
+                                <p class="news-content">${content}</p>
+                            </div>
+                        `;
                     } else {
-                        formattedContent += `<p>${trimmed}</p>`;
+                        // If no clear title, treat as paragraph
+                        formattedContent += `<p class="news-content">${newsContent}</p>`;
                     }
+                } else if (trimmed.startsWith('#')) {
+                    // Markdown style heading
+                    formattedContent += `<h2 class="section-title">${trimmed.replace('#', '').trim()}</h2>`;
+                } else {
+                    // Regular paragraph
+                    formattedContent += `<p class="news-content">${trimmed}</p>`;
                 }
             });
             
