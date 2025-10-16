@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Etiketleri -->
+    <title id="pageTitle">Haber - Gündem 5 Dakika</title>
+    <meta name="description" id="pageDescription" content="Gündem 5 Dakika haber özeti. Güncel haberleri okuyun." />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    
+    <!-- Font Preconnections -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background: #ffffff;
+            color: #1e293b;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            display: block;
+        }
+
+        .category-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333366;
+            margin-bottom: 16px;
+            font-family: "Merriweather", serif;
+        }
+
+        .date-subtitle {
+            font-size: 1.1rem;
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        .content {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .article-content {
+            color: #374151;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        .article-content p {
+            margin-bottom: 20px;
+        }
+
+        .article-content h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333366;
+            margin: 30px 0 16px 0;
+            font-family: "Merriweather", serif;
+        }
+
+        .article-content h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #4a5568;
+            margin: 24px 0 12px 0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #333366;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            text-align: center;
+            padding: 60px 20px;
+            color: #ef4444;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #333366 0%, #4a4a7a 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 30px;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(51, 51, 102, 0.3);
+        }
+
+        .actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .action-btn {
+            display: inline-block;
+            background: #f8fafc;
+            color: #64748b;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .action-btn:hover {
+            background: #e2e8f0;
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .listen-btn {
+            background: linear-gradient(135deg, #333366 0%, #4a4a7a 100%);
+            color: white;
+            border: none;
+        }
+
+        .listen-btn:hover {
+            background: linear-gradient(135deg, #2a2a55 0%, #333366 100%);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 10px;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .category-title {
+                font-size: 2rem;
+            }
+            
+            .article-content {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="/eskilogo.png" alt="Gündem 5 Dakika Logo" class="logo">
+            <h1 class="category-title" id="categoryTitle">Haber</h1>
+            <p class="date-subtitle" id="dateSubtitle">Yükleniyor...</p>
+        </div>
+
+        <div id="content">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>Haber içeriği yükleniyor...</p>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a href="/" class="back-button">← Ana Sayfaya Dön</a>
+            <a href="#" class="action-btn listen-btn" id="listenBtn" style="display: none;">🎧 Dinle</a>
+        </div>
+    </div>
+
+    <script>
+        // Environment Detection
+        const IS_PRODUCTION = window.location.hostname === 'gundem5dakika.com' || window.location.hostname === 'www.gundem5dakika.com';
+
+        // Console Logger - Only logs in development
+        const logger = {
+            log: (...args) => {
+                if (!IS_PRODUCTION) console.log(...args);
+            },
+            warn: (...args) => {
+                if (!IS_PRODUCTION) console.warn(...args);
+            },
+            error: (...args) => {
+                if (!IS_PRODUCTION) console.error(...args);
+            }
+        };
+
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://ocllbrqxdoczugoubdyu.supabase.co';
+        const TEXT_BUCKET_NAME = 'text-bucket';
+
+        // Category mapping (UI category -> Supabase folder name)
+        const CATEGORY_MAPPING = {
+            'gundem': 'gunun-mansetleri',
+            'ekonomi': 'ekonomi',
+            'spor': 'spor',
+            'magazin': 'magazin',
+            'politika': 'politika'
+        };
+
+        // Category names
+        const CATEGORY_NAMES = {
+            'gundem': 'Gündem',
+            'ekonomi': 'Ekonomi',
+            'spor': 'Spor',
+            'magazin': 'Magazin',
+            'politika': 'Politika'
+        };
+
+        // Get URL parameters
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Get text URL from Supabase
+        function getTextUrl(category) {
+            const folderName = CATEGORY_MAPPING[category];
+            const fileName = 'bugun.txt';
+            const textPath = `text/${folderName}/${fileName}`;
+            const url = `${SUPABASE_URL}/storage/v1/object/public/${TEXT_BUCKET_NAME}/${textPath}`;
+            
+            logger.log('📁 Kategori:', category, '→', folderName);
+            logger.log('📁 Aranan dosya yolu:', textPath);
+            logger.log('🔗 Tam URL:', url);
+            
+            return url;
+        }
+
+        // Load text content
+        async function loadTextContent(category) {
+            try {
+                const textUrl = getTextUrl(category);
+                
+                // Create AbortController for timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                
+                const response = await fetch(textUrl, { 
+                    method: 'GET',
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const text = await response.text();
+                return text;
+                
+            } catch (error) {
+                logger.error('Error loading text content:', error);
+                throw error;
+            }
+        }
+
+        // Format text content
+        function formatTextContent(text) {
+            // Split by double line breaks to create paragraphs
+            const paragraphs = text.split('\n\n').filter(p => p.trim());
+            
+            let formattedContent = '';
+            
+            paragraphs.forEach(paragraph => {
+                const trimmed = paragraph.trim();
+                if (trimmed) {
+                    // Check if it's a heading (starts with # or is short and bold)
+                    if (trimmed.startsWith('#') || (trimmed.length < 100 && trimmed.includes(':'))) {
+                        formattedContent += `<h2>${trimmed.replace('#', '').trim()}</h2>`;
+                    } else {
+                        formattedContent += `<p>${trimmed}</p>`;
+                    }
+                }
+            });
+            
+            return formattedContent;
+        }
+
+        // Update page content
+        function updatePageContent(category, content) {
+            const categoryName = CATEGORY_NAMES[category];
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('tr-TR', { 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric' 
+            });
+            
+            // Update title and meta
+            document.getElementById('pageTitle').textContent = `${categoryName} - Gündem 5 Dakika`;
+            document.getElementById('pageDescription').setAttribute('content', `${categoryName} kategorisi güncel haber özeti. ${dateStr}`);
+            
+            // Update header
+            document.getElementById('categoryTitle').textContent = categoryName;
+            document.getElementById('dateSubtitle').textContent = dateStr;
+            
+            // Update content
+            const contentDiv = document.getElementById('content');
+            contentDiv.innerHTML = `
+                <div class="content">
+                    <div class="article-content">
+                        ${content}
+                    </div>
+                </div>
+            `;
+            
+            // Show listen button
+            const listenBtn = document.getElementById('listenBtn');
+            listenBtn.style.display = 'inline-block';
+            listenBtn.href = `/?category=${category}&action=listen`;
+        }
+
+        // Show error
+        function showError(message) {
+            const contentDiv = document.getElementById('content');
+            contentDiv.innerHTML = `
+                <div class="error">
+                    <h2>Haber Yüklenemedi</h2>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        // Initialize page
+        async function initializePage() {
+            const category = getUrlParameter('category');
+            
+            if (!category || !CATEGORY_MAPPING[category]) {
+                showError('Geçersiz kategori. Lütfen ana sayfadan tekrar deneyin.');
+                return;
+            }
+            
+            try {
+                const textContent = await loadTextContent(category);
+                const formattedContent = formatTextContent(textContent);
+                updatePageContent(category, formattedContent);
+                
+            } catch (error) {
+                logger.error('Failed to load content:', error);
+                showError('Haber içeriği yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+</body>
+</html>

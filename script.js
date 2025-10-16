@@ -17,7 +17,8 @@ const logger = {
 // Supabase Configuration
 const SUPABASE_URL = 'https://ocllbrqxdoczugoubdyu.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jbGxicnF4ZG9jenVnb3ViZHl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwODEwMjcsImV4cCI6MjA3NTY1NzAyN30.haE0t-C9zI9n_2P7eWobcBfNhFz4brG3nnARSXeIMUc';
-const BUCKET_NAME = 'audio-bucket';
+const AUDIO_BUCKET_NAME = 'audio-bucket';
+const TEXT_BUCKET_NAME = 'text-bucket';
 
 // Category mapping (UI category -> Supabase folder name)
 const CATEGORY_MAPPING = {
@@ -124,7 +125,7 @@ function getAudioUrl(category) {
     const audioPath = `audio/${folderName}/${fileName}`;
     
     // Get public URL from Supabase Storage
-    const url = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${audioPath}`;
+    const url = `${SUPABASE_URL}/storage/v1/object/public/${AUDIO_BUCKET_NAME}/${audioPath}`;
     
     logger.log('📁 Kategori:', category, '→', folderName);
     logger.log('📁 Aranan dosya yolu:', audioPath);
@@ -297,13 +298,48 @@ function showErrorWithRetry(category, error) {
     }
 }
 
+// Get text URL from Supabase
+function getTextUrl(category) {
+    // Map UI category to Supabase folder name
+    const folderName = CATEGORY_MAPPING[category];
+    
+    // Fixed filename for all categories
+    const fileName = 'bugun.txt';
+    
+    // Construct the text file path
+    const textPath = `text/${folderName}/${fileName}`;
+    
+    // Get public URL from Supabase Storage
+    const url = `${SUPABASE_URL}/storage/v1/object/public/${TEXT_BUCKET_NAME}/${textPath}`;
+    
+    logger.log('📁 Kategori:', category, '→', folderName);
+    logger.log('📁 Aranan dosya yolu:', textPath);
+    logger.log('🔗 Tam URL:', url);
+    
+    return url;
+}
+
 // Load and display written content
 async function loadAndReadContent(category) {
     try {
         logger.log(`📖 ${category} kategorisi için yazılı içerik yükleniyor...`);
         
-        // For now, show a placeholder message
-        // Later this will load actual content from your data source
+        // Get text URL
+        const textUrl = getTextUrl(category);
+        
+        // Try to load text with retry mechanism
+        const success = await loadTextWithRetry(textUrl, 3);
+        
+        if (!success) {
+            throw new Error('Yazı dosyası yüklenemedi');
+        }
+
+        // Redirect to text page with category parameter
+        window.location.href = `haber.html?category=${category}`;
+        
+    } catch (error) {
+        logger.error('Error loading written content:', error);
+        
         const categoryNames = {
             'gundem': 'Gündem',
             'ekonomi': 'Ekonomi',
@@ -312,20 +348,65 @@ async function loadAndReadContent(category) {
             'politika': 'Politika'
         };
         
-        const message = `
-            ${categoryNames[category]} kategorisi için yazılı içerik henüz hazırlanıyor.
+        const errorMessage = `
+            ${categoryNames[category]} kategorisi için yazı dosyası yüklenemedi.
             
-            Bu özellik yakında aktif olacak ve haberleri okuyabileceksiniz.
+            Olası nedenler:
+            • İnternet bağlantısı sorunu
+            • Geçici sunucu sorunu
+            • Dosya henüz hazır değil
             
-            Şimdilik sesli haberleri dinleyebilirsiniz.
+            Tekrar denemek ister misiniz?
         `;
         
-        alert(message);
-        
-    } catch (error) {
-        logger.error('Error loading written content:', error);
-        alert('Yazılı içerik yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+        if (confirm(errorMessage)) {
+            // Retry loading
+            loadAndReadContent(category);
+        }
     }
+}
+
+// Load text with retry mechanism
+async function loadTextWithRetry(textUrl, maxRetries = 3) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            logger.log(`🔄 Yazı yükleme denemesi ${attempt}/${maxRetries}:`, textUrl);
+            
+            // Create AbortController for timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 saniye timeout
+            
+            // Try to fetch with timeout
+            const response = await fetch(textUrl, { 
+                method: 'GET',
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (response.ok) {
+                logger.log('✅ Yazı dosyası başarıyla bulundu');
+                return true;
+            } else {
+                logger.warn(`⚠️ HTTP ${response.status}: ${response.statusText}`);
+                if (attempt < maxRetries) {
+                    await new Promise(resolve => setTimeout(resolve, 1000 * attempt)); // Exponential backoff
+                }
+            }
+        } catch (error) {
+            logger.warn(`❌ Deneme ${attempt} başarısız:`, error.message);
+            
+            if (error.name === 'AbortError') {
+                logger.warn('⏰ İstek zaman aşımına uğradı');
+            }
+            
+            if (attempt < maxRetries) {
+                await new Promise(resolve => setTimeout(resolve, 1000 * attempt)); // Exponential backoff
+            }
+        }
+    }
+    
+    return false;
 }
 
 // Toggle play/pause
