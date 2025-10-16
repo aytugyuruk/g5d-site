@@ -1,3 +1,19 @@
+// Environment Detection
+const IS_PRODUCTION = window.location.hostname === 'gundem5dakika.com' || window.location.hostname === 'www.gundem5dakika.com';
+
+// Console Logger - Only logs in development
+const logger = {
+    log: (...args) => {
+        if (!IS_PRODUCTION) console.log(...args);
+    },
+    warn: (...args) => {
+        if (!IS_PRODUCTION) console.warn(...args);
+    },
+    error: (...args) => {
+        if (!IS_PRODUCTION) console.error(...args);
+    }
+};
+
 // Supabase Configuration
 const SUPABASE_URL = 'https://ocllbrqxdoczugoubdyu.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jbGxicnF4ZG9jenVnb3ViZHl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwODEwMjcsImV4cCI6MjA3NTY1NzAyN30.haE0t-C9zI9n_2P7eWobcBfNhFz4brG3nnARSXeIMUc';
@@ -99,9 +115,9 @@ function getAudioUrl(category) {
     // Get public URL from Supabase Storage
     const url = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${audioPath}`;
     
-    console.log('📁 Kategori:', category, '→', folderName);
-    console.log('📁 Aranan dosya yolu:', audioPath);
-    console.log('🔗 Tam URL:', url);
+    logger.log('📁 Kategori:', category, '→', folderName);
+    logger.log('📁 Aranan dosya yolu:', audioPath);
+    logger.log('🔗 Tam URL:', url);
     
     return url;
 }
@@ -153,7 +169,7 @@ async function loadAndPlayAudio(category) {
             audioPlayer.classList.remove('hidden');
             document.body.classList.add('player-active');
         } else {
-            console.error('Audio player element not found!');
+            logger.error('Audio player element not found!');
             return;
         }
         
@@ -164,7 +180,7 @@ async function loadAndPlayAudio(category) {
         hideLoadingState();
 
     } catch (error) {
-        console.error('Error loading audio:', error);
+        logger.error('Error loading audio:', error);
         hideLoadingState();
         
         // Show more helpful error message with retry option
@@ -176,7 +192,7 @@ async function loadAndPlayAudio(category) {
 async function loadAudioWithRetry(audioUrl, maxRetries = 3) {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
-            console.log(`🔄 Audio yükleme denemesi ${attempt}/${maxRetries}:`, audioUrl);
+            logger.log(`🔄 Audio yükleme denemesi ${attempt}/${maxRetries}:`, audioUrl);
             
             // Create AbortController for timeout
             const controller = new AbortController();
@@ -191,19 +207,19 @@ async function loadAudioWithRetry(audioUrl, maxRetries = 3) {
             clearTimeout(timeoutId);
             
             if (response.ok) {
-                console.log('✅ Audio dosyası başarıyla bulundu');
+                logger.log('✅ Audio dosyası başarıyla bulundu');
                 return true;
             } else {
-                console.warn(`⚠️ HTTP ${response.status}: ${response.statusText}`);
+                logger.warn(`⚠️ HTTP ${response.status}: ${response.statusText}`);
                 if (attempt < maxRetries) {
                     await new Promise(resolve => setTimeout(resolve, 1000 * attempt)); // Exponential backoff
                 }
             }
         } catch (error) {
-            console.warn(`❌ Deneme ${attempt} başarısız:`, error.message);
+            logger.warn(`❌ Deneme ${attempt} başarısız:`, error.message);
             
             if (error.name === 'AbortError') {
-                console.warn('⏰ İstek zaman aşımına uğradı');
+                logger.warn('⏰ İstek zaman aşımına uğradı');
             }
             
             if (attempt < maxRetries) {
@@ -369,7 +385,7 @@ function togglePlaybackSpeed() {
 async function checkAudioAvailability() {
     const categories = ['gundem', 'ekonomi', 'spor', 'magazin', 'politika'];
     
-    console.log('🔍 Audio dosyalarının varlığı kontrol ediliyor...');
+    logger.log('🔍 Audio dosyalarının varlığı kontrol ediliyor...');
     
     for (const category of categories) {
         try {
@@ -389,24 +405,24 @@ async function checkAudioAvailability() {
             const card = document.querySelector(`.category-card[data-category="${category}"]`);
             
             if (response.ok) {
-                console.log(`✅ ${category}: Audio dosyası mevcut`);
+                logger.log(`✅ ${category}: Audio dosyası mevcut`);
                 // Optional: Add visual indicator for available content
                 // card.style.opacity = '1';
             } else {
-                console.warn(`⚠️ ${category}: Audio dosyası bulunamadı (${response.status})`);
+                logger.warn(`⚠️ ${category}: Audio dosyası bulunamadı (${response.status})`);
                 // Optional: Add visual indicator for unavailable content
                 // card.style.opacity = '0.6';
             }
         } catch (error) {
-            console.warn(`❌ ${category}: Kontrol edilemedi -`, error.message);
+            logger.warn(`❌ ${category}: Kontrol edilemedi -`, error.message);
             
             if (error.name === 'AbortError') {
-                console.warn(`⏰ ${category}: İstek zaman aşımına uğradı`);
+                logger.warn(`⏰ ${category}: İstek zaman aşımına uğradı`);
             }
         }
     }
     
-    console.log('🔍 Audio kontrolü tamamlandı');
+    logger.log('🔍 Audio kontrolü tamamlandı');
 }
 
 // Keyboard shortcuts
