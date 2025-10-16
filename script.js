@@ -36,6 +36,8 @@ const progressBar = document.querySelector('.progress-bar');
 const playIcon = document.querySelector('.play-icon');
 const pauseIcon = document.querySelector('.pause-icon');
 
+// Elements loaded successfully
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     initializeEventListeners();
@@ -46,14 +48,16 @@ document.addEventListener('DOMContentLoaded', () => {
 function initializeEventListeners() {
     // Category cards (clicking anywhere on card)
     const categoryCards = document.querySelectorAll('.category-card');
+    
     categoryCards.forEach(card => {
         card.addEventListener('click', () => {
             const category = card.dataset.category;
+            
             if (category) {
                 loadAndPlayAudio(category);
             } else if (card.classList.contains('contact-card')) {
-                // Handle contact card click
-                window.location.href = 'mailto:info@gundem5dakika.com';
+                // Handle contact card click - redirect to Instagram
+                window.open('https://www.instagram.com/itwo.ai/', '_blank');
             }
         });
     });
@@ -102,23 +106,20 @@ function getAudioUrl(category) {
     return url;
 }
 
-// Load and play audio
+// Load and play audio with retry mechanism
 async function loadAndPlayAudio(category) {
     try {
         // Show loading state
-        const card = document.querySelector(`.category-card[data-category="${category}"]`);
-        const loadingIndicator = card.querySelector('.loading-indicator');
+        showLoadingState(category);
         
-        loadingIndicator.classList.remove('hidden');
-
         // Get audio URL
         const audioUrl = getAudioUrl(category);
         
-        // Check if audio file exists
-        const response = await fetch(audioUrl, { method: 'HEAD' });
+        // Try to load audio with retry mechanism
+        const success = await loadAudioWithRetry(audioUrl, 3);
         
-        if (!response.ok) {
-            throw new Error('Audio dosyası bulunamadı');
+        if (!success) {
+            throw new Error('Audio dosyası yüklenemedi');
         }
 
         // Set current category
@@ -148,25 +149,124 @@ async function loadAndPlayAudio(category) {
         audioElement.load();
         
         // Show player
-        audioPlayer.classList.remove('hidden');
-        document.body.classList.add('player-active');
+        if (audioPlayer) {
+            audioPlayer.classList.remove('hidden');
+            document.body.classList.add('player-active');
+        } else {
+            console.error('Audio player element not found!');
+            return;
+        }
         
         // Play audio
         await audioElement.play();
         
-        // Hide loading
-        loadingIndicator.classList.add('hidden');
+        // Hide loading state
+        hideLoadingState();
 
     } catch (error) {
         console.error('Error loading audio:', error);
+        hideLoadingState();
         
-        // Hide loading
-        const card = document.querySelector(`.category-card[data-category="${category}"]`);
-        const loadingIndicator = card.querySelector('.loading-indicator');
+        // Show more helpful error message with retry option
+        showErrorWithRetry(category, error);
+    }
+}
+
+// Load audio with retry mechanism
+async function loadAudioWithRetry(audioUrl, maxRetries = 3) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            console.log(`🔄 Audio yükleme denemesi ${attempt}/${maxRetries}:`, audioUrl);
+            
+            // Create AbortController for timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 saniye timeout
+            
+            // Try to fetch with timeout
+            const response = await fetch(audioUrl, { 
+                method: 'HEAD',
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (response.ok) {
+                console.log('✅ Audio dosyası başarıyla bulundu');
+                return true;
+            } else {
+                console.warn(`⚠️ HTTP ${response.status}: ${response.statusText}`);
+                if (attempt < maxRetries) {
+                    await new Promise(resolve => setTimeout(resolve, 1000 * attempt)); // Exponential backoff
+                }
+            }
+        } catch (error) {
+            console.warn(`❌ Deneme ${attempt} başarısız:`, error.message);
+            
+            if (error.name === 'AbortError') {
+                console.warn('⏰ İstek zaman aşımına uğradı');
+            }
+            
+            if (attempt < maxRetries) {
+                await new Promise(resolve => setTimeout(resolve, 1000 * attempt)); // Exponential backoff
+            }
+        }
+    }
+    
+    return false;
+}
+
+// Show loading state
+function showLoadingState(category) {
+    const categoryNames = {
+        'gundem': 'Gündem',
+        'ekonomi': 'Ekonomi',
+        'spor': 'Spor',
+        'magazin': 'Magazin',
+        'politika': 'Politika'
+    };
+    
+    playerTitle.textContent = `${categoryNames[category]} yükleniyor...`;
+    playerDate.textContent = 'Lütfen bekleyin';
+    
+    // Show player immediately with loading state
+    if (audioPlayer) {
+        audioPlayer.classList.remove('hidden');
+        document.body.classList.add('player-active');
+    }
+}
+
+// Hide loading state
+function hideLoadingState() {
+    // Loading state will be replaced by actual content
+}
+
+// Show error with retry option
+function showErrorWithRetry(category, error) {
+    const categoryNames = {
+        'gundem': 'Gündem',
+        'ekonomi': 'Ekonomi',
+        'spor': 'Spor',
+        'magazin': 'Magazin',
+        'politika': 'Politika'
+    };
+    
+    const errorMessage = `
+        ${categoryNames[category]} kategorisi için ses dosyası yüklenemedi.
         
-        loadingIndicator.classList.add('hidden');
+        Olası nedenler:
+        • İnternet bağlantısı sorunu
+        • Geçici sunucu sorunu
+        • Dosya henüz hazır değil
         
-        alert('Bugün için bu kategoride henüz haber yok. Lütfen daha sonra tekrar deneyin.');
+        Tekrar denemek ister misiniz?
+    `;
+    
+    if (confirm(errorMessage)) {
+        // Retry loading
+        loadAndPlayAudio(category);
+    } else {
+        // Close player
+        closePlayer();
     }
 }
 
@@ -269,21 +369,44 @@ function togglePlaybackSpeed() {
 async function checkAudioAvailability() {
     const categories = ['gundem', 'ekonomi', 'spor', 'magazin', 'politika'];
     
+    console.log('🔍 Audio dosyalarının varlığı kontrol ediliyor...');
+    
     for (const category of categories) {
         try {
             const audioUrl = getAudioUrl(category);
-            const response = await fetch(audioUrl, { method: 'HEAD' });
+            
+            // Create AbortController for timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 saniye timeout
+            
+            const response = await fetch(audioUrl, { 
+                method: 'HEAD',
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
             
             const card = document.querySelector(`.category-card[data-category="${category}"]`);
             
-            if (!response.ok) {
+            if (response.ok) {
+                console.log(`✅ ${category}: Audio dosyası mevcut`);
+                // Optional: Add visual indicator for available content
+                // card.style.opacity = '1';
+            } else {
+                console.warn(`⚠️ ${category}: Audio dosyası bulunamadı (${response.status})`);
                 // Optional: Add visual indicator for unavailable content
                 // card.style.opacity = '0.6';
             }
         } catch (error) {
-            console.log(`Checking ${category}:`, error.message);
+            console.warn(`❌ ${category}: Kontrol edilemedi -`, error.message);
+            
+            if (error.name === 'AbortError') {
+                console.warn(`⏰ ${category}: İstek zaman aşımına uğradı`);
+            }
         }
     }
+    
+    console.log('🔍 Audio kontrolü tamamlandı');
 }
 
 // Keyboard shortcuts
