@@ -177,35 +177,6 @@
             margin-top: 30px;
         }
 
-        .action-btn {
-            display: inline-block;
-            background: #f1f5f9;
-            color: #64748b;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            margin: 0 8px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .action-btn:hover {
-            background: #e2e8f0;
-            color: #1e293b;
-        }
-
-        .listen-btn {
-            background: #1e293b;
-            color: white;
-            border: none;
-        }
-
-        .listen-btn:hover {
-            background: #334155;
-            color: white;
-        }
-
         @media (max-width: 768px) {
             .container {
                 padding: 20px 16px;
@@ -255,7 +226,6 @@
 
         <div class="actions">
             <a href="/" class="back-button">← Ana Sayfaya Dön</a>
-            <a href="#" class="action-btn listen-btn" id="listenBtn" style="display: none;">🎧 Dinle</a>
         </div>
     </div>
 
@@ -418,11 +388,6 @@
                     </div>
                 </div>
             `;
-            
-            // Show listen button
-            const listenBtn = document.getElementById('listenBtn');
-            listenBtn.style.display = 'inline-block';
-            listenBtn.href = `/?category=${category}&action=listen`;
         }
 
         // Show error
