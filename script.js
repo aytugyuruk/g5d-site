@@ -62,21 +62,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Event Listeners
 function initializeEventListeners() {
-    // Category cards (clicking anywhere on card)
-    const categoryCards = document.querySelectorAll('.category-card');
+    // Category action buttons
+    const actionButtons = document.querySelectorAll('.action-btn');
     
-    categoryCards.forEach(card => {
-        card.addEventListener('click', () => {
-            const category = card.dataset.category;
+    actionButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent card click
             
-            if (category) {
+            const card = button.closest('.category-card');
+            const category = card.dataset.category;
+            const action = button.dataset.action;
+            
+            if (category && action === 'listen') {
                 loadAndPlayAudio(category);
-            } else if (card.classList.contains('contact-card')) {
-                // Handle contact card click - redirect to Instagram
-                window.open('https://www.instagram.com/itwo.ai/', '_blank');
+            } else if (category && action === 'read') {
+                loadAndReadContent(category);
             }
         });
     });
+    
+    // Contact card (clicking anywhere on card)
+    const contactCard = document.querySelector('.contact-card');
+    if (contactCard) {
+        contactCard.addEventListener('click', () => {
+            window.open('https://www.instagram.com/itwo.ai/', '_blank');
+        });
+    }
 
     // Audio player controls
     playPauseBtn.addEventListener('click', togglePlayPause);
@@ -283,6 +294,37 @@ function showErrorWithRetry(category, error) {
     } else {
         // Close player
         closePlayer();
+    }
+}
+
+// Load and display written content
+async function loadAndReadContent(category) {
+    try {
+        logger.log(`📖 ${category} kategorisi için yazılı içerik yükleniyor...`);
+        
+        // For now, show a placeholder message
+        // Later this will load actual content from your data source
+        const categoryNames = {
+            'gundem': 'Gündem',
+            'ekonomi': 'Ekonomi',
+            'spor': 'Spor',
+            'magazin': 'Magazin',
+            'politika': 'Politika'
+        };
+        
+        const message = `
+            ${categoryNames[category]} kategorisi için yazılı içerik henüz hazırlanıyor.
+            
+            Bu özellik yakında aktif olacak ve haberleri okuyabileceksiniz.
+            
+            Şimdilik sesli haberleri dinleyebilirsiniz.
+        `;
+        
+        alert(message);
+        
+    } catch (error) {
+        logger.error('Error loading written content:', error);
+        alert('Yazılı içerik yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
     }
 }
 
