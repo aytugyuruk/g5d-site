@@ -25,7 +25,6 @@ const CATEGORY_MAPPING = {
     'gundem': 'gunun-mansetleri',
     'ekonomi': 'ekonomi',
     'spor': 'spor',
-    'magazin': 'magazin',
     'dunya': 'dunya'
 };
 
@@ -158,7 +157,6 @@ async function loadAndPlayAudio(category) {
             'gundem': 'Gündem',
             'ekonomi': 'Ekonomi',
             'spor': 'Spor',
-            'magazin': 'Magazin',
             'dunya': 'Dünya'
         };
         
@@ -249,7 +247,6 @@ function showLoadingState(category) {
         'gundem': 'Gündem',
         'ekonomi': 'Ekonomi',
         'spor': 'Spor',
-        'magazin': 'Magazin',
         'dunya': 'Dünya'
     };
     
@@ -274,7 +271,6 @@ function showErrorWithRetry(category, error) {
         'gundem': 'Gündem',
         'ekonomi': 'Ekonomi',
         'spor': 'Spor',
-        'magazin': 'Magazin',
         'dunya': 'Dünya'
     };
     
@@ -344,7 +340,6 @@ async function loadAndReadContent(category) {
             'gundem': 'Gündem',
             'ekonomi': 'Ekonomi',
             'spor': 'Spor',
-            'magazin': 'Magazin',
             'dunya': 'Dünya'
         };
         
@@ -506,7 +501,7 @@ function togglePlaybackSpeed() {
 
 // Check audio availability (optional feature)
 async function checkAudioAvailability() {
-    const categories = ['gundem', 'ekonomi', 'spor', 'magazin', 'dunya'];
+    const categories = ['gundem', 'ekonomi', 'spor', 'dunya'];
     
     logger.log('🔍 Audio dosyalarının varlığı kontrol ediliyor...');
     
