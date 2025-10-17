@@ -54,10 +54,16 @@ const pauseIcon = document.querySelector('.pause-icon');
 
 // Elements loaded successfully
 
+// Financial Data Configuration
+const FINANCIAL_API_URL = 'https://finans.truncgil.com/v4/today.json';
+let financialUpdateInterval = null;
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     initializeEventListeners();
     checkAudioAvailability();
+    loadFinancialData();
+    startFinancialUpdates();
 });
 
 // Event Listeners
@@ -562,6 +568,120 @@ document.addEventListener('keydown', (e) => {
             e.preventDefault();
             togglePlaybackSpeed();
         }
+    }
+});
+
+// Financial Data Functions
+async function loadFinancialData() {
+    try {
+        logger.log('💰 Finansal veriler yükleniyor...');
+        
+        const response = await fetch(FINANCIAL_API_URL);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        logger.log('✅ Finansal veriler yüklendi:', data);
+        
+        updateFinancialUI(data);
+        
+    } catch (error) {
+        logger.error('❌ Finansal veriler yüklenemedi:', error);
+        showFinancialError();
+    }
+}
+
+function updateFinancialUI(data) {
+    // Dolar
+    if (data.USD) {
+        updateTickerItem('ticker-usd', data.USD.Selling, data.USD.Change, '₺');
+    }
+    
+    // Euro
+    if (data.EUR) {
+        updateTickerItem('ticker-eur', data.EUR.Selling, data.EUR.Change, '₺');
+    }
+    
+    // Gram Altın (GRA)
+    if (data.GRA) {
+        updateTickerItem('ticker-gold', data.GRA.Selling, data.GRA.Change, '₺');
+    }
+    
+    // BIST 100 (XU100)
+    if (data.XU100) {
+        updateTickerItem('ticker-bist', data.XU100.Selling, data.XU100.Change, '');
+    }
+}
+
+function updateTickerItem(tickerId, value, change, suffix = '') {
+    const tickerElement = document.getElementById(tickerId);
+    if (!tickerElement) return;
+    
+    const valueElement = tickerElement.querySelector('.value');
+    const changeElement = tickerElement.querySelector('.change');
+    
+    if (valueElement) {
+        // Format value with commas
+        const formattedValue = formatNumber(value);
+        valueElement.textContent = formattedValue + suffix;
+    }
+    
+    if (changeElement) {
+        // Format change with sign and color
+        const changeClass = change > 0 ? 'positive' : change < 0 ? 'negative' : 'neutral';
+        const changeSign = change > 0 ? '↑' : change < 0 ? '↓' : '';
+        const formattedChange = Math.abs(change).toFixed(2);
+        
+        changeElement.textContent = `${changeSign}%${formattedChange}`;
+        changeElement.className = `change ${changeClass}`;
+    }
+}
+
+function formatNumber(num) {
+    if (num === null || num === undefined) return '--';
+    
+    // Convert to number if string
+    const number = typeof num === 'string' ? parseFloat(num) : num;
+    
+    // Format with 2 decimal places and thousands separator
+    return number.toLocaleString('tr-TR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+function showFinancialError() {
+    // Show placeholder values on error
+    const tickers = ['ticker-usd', 'ticker-eur', 'ticker-gold', 'ticker-bist'];
+    
+    tickers.forEach(tickerId => {
+        const tickerElement = document.getElementById(tickerId);
+        if (!tickerElement) return;
+        
+        const valueElement = tickerElement.querySelector('.value');
+        const changeElement = tickerElement.querySelector('.change');
+        
+        if (valueElement) valueElement.textContent = '--';
+        if (changeElement) {
+            changeElement.textContent = '--';
+            changeElement.className = 'change neutral';
+        }
+    });
+}
+
+function startFinancialUpdates() {
+    // Update every 30 seconds
+    financialUpdateInterval = setInterval(() => {
+        loadFinancialData();
+    }, 30000);
+}
+
+// Clean up interval on page unload
+window.addEventListener('beforeunload', () => {
+    if (financialUpdateInterval) {
+        clearInterval(financialUpdateInterval);
     }
 });
 

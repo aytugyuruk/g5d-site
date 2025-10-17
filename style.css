@@ -145,6 +145,89 @@ body.player-active {
     background-clip: text;
 }
 
+/* Financial Ticker */
+.financial-ticker {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 0 auto 50px;
+    max-width: 600px;
+    padding: 0 20px;
+}
+
+.ticker-item {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.ticker-item:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(51, 51, 102, 0.1);
+    transform: translateY(-2px);
+}
+
+.ticker-icon {
+    font-size: 28px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.ticker-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.ticker-label {
+    font-size: 0.8rem;
+    color: #64748b;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.ticker-value {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.ticker-value .value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+    font-variant-numeric: tabular-nums;
+}
+
+.ticker-value .change {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-variant-numeric: tabular-nums;
+}
+
+.ticker-value .change.positive {
+    color: #059669;
+    background: #d1fae5;
+}
+
+.ticker-value .change.negative {
+    color: #dc2626;
+    background: #fee2e2;
+}
+
+.ticker-value .change.neutral {
+    color: #64748b;
+    background: #f1f5f9;
+}
+
 /* Categories Container */
 .categories-container {
     display: flex;
@@ -652,6 +735,35 @@ body.player-active {
         max-width: 100%;
     }
 
+    .financial-ticker {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 40px;
+        padding: 0 16px;
+        max-width: 100%;
+    }
+
+    .ticker-item {
+        padding: 12px 14px;
+    }
+
+    .ticker-icon {
+        font-size: 24px;
+    }
+
+    .ticker-label {
+        font-size: 0.75rem;
+    }
+
+    .ticker-value .value {
+        font-size: 1rem;
+    }
+
+    .ticker-value .change {
+        font-size: 0.7rem;
+        padding: 2px 5px;
+    }
+
     .site-title {
         font-size: 2.25rem;
         letter-spacing: -1px;
@@ -809,6 +921,33 @@ body.player-active {
 
     .header-section {
         margin-bottom: 50px;
+    }
+
+    .financial-ticker {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        margin-bottom: 35px;
+        padding: 0 16px;
+    }
+
+    .ticker-item {
+        padding: 10px 12px;
+    }
+
+    .ticker-icon {
+        font-size: 22px;
+    }
+
+    .ticker-label {
+        font-size: 0.7rem;
+    }
+
+    .ticker-value .value {
+        font-size: 0.95rem;
+    }
+
+    .ticker-value .change {
+        font-size: 0.65rem;
     }
 
     .site-title {
