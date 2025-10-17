@@ -25,7 +25,7 @@ const CATEGORY_MAPPING = {
     'gundem': 'gunun-mansetleri',
     'ekonomi': 'ekonomi',
     'spor': 'spor',
-    'bilim-teknoloji': 'bilim-teknoloji',
+    'bilim-teknoloji': 'magazin',
     'dunya': 'dunya'
 };
 
