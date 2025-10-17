@@ -54,79 +54,54 @@ const pauseIcon = document.querySelector('.pause-icon');
 
 // Elements loaded successfully
 
-// Financial Data Functions - 100% FREE, NO API KEYS NEEDED!
+// Financial Data Functions - 100% FREE, CORS-FRIENDLY for GitHub Pages!
 
 async function updateFinancialData() {
     try {
         const timestamp = Date.now();
         logger.log('📊 Finansal veriler güncelleniyor... (' + new Date().toLocaleTimeString('tr-TR') + ')');
         
-        // Paralel olarak tüm API'leri çağır (daha hızlı)
-        const [currencyData, goldData, bistData] = await Promise.allSettled([
-            // Döviz kurları (ExchangeRate-API - Ücretsiz, Key yok)
-            fetch('https://api.exchangerate-api.com/v4/latest/USD')
-                .then(r => r.json()),
-            
-            // Altın fiyatı (Exchangerate.host - Ücretsiz, Key yok)
-            fetch('https://api.exchangerate.host/latest?base=XAU&symbols=TRY')
-                .then(r => r.json()),
-            
-            // BIST 100 (Yahoo Finance - Ücretsiz)
-            fetch('https://query1.finance.yahoo.com/v8/finance/chart/XU100.IS?interval=1m&range=1d')
-                .then(r => r.json())
-        ]);
+        // GenelPara API - Türkiye'ye özel, CORS-friendly, ücretsiz
+        const genelparaResponse = await fetch('https://api.genelpara.com/embed/doviz.json');
+        const genelparaData = await genelparaResponse.json();
         
-        // Döviz kurları (Dolar & Euro)
-        if (currencyData.status === 'fulfilled' && currencyData.value?.rates) {
-            const tryRate = currencyData.value.rates.TRY;
-            const eurRate = currencyData.value.rates.EUR;
+        if (genelparaData) {
+            // Dolar
+            if (genelparaData.USD) {
+                document.getElementById('usd-rate').textContent = `₺${parseFloat(genelparaData.USD.satis).toFixed(2)}`;
+                logger.log('✅ Dolar: ₺' + genelparaData.USD.satis);
+            }
             
-            document.getElementById('usd-rate').textContent = `₺${tryRate.toFixed(2)}`;
-            document.getElementById('eur-rate').textContent = `₺${(tryRate / eurRate).toFixed(2)}`;
-            logger.log('✅ Döviz kurları güncellendi');
-        }
-        
-        // Altın fiyatı (1 troy ons XAU -> TRY gram)
-        if (goldData.status === 'fulfilled' && goldData.value?.rates?.TRY) {
-            const goldPerGram = goldData.value.rates.TRY / 31.1035;
-            document.getElementById('gold-rate').textContent = `₺${goldPerGram.toFixed(0)}`;
-            logger.log('✅ Altın fiyatı güncellendi');
-        } else if (goldData.status === 'rejected') {
-            logger.warn('⚠️ Altın verisi yüklenemedi');
-            // Fallback: Alternatif API dene
-            try {
-                const fallbackGold = await fetch('https://api.frankfurter.app/latest?from=XAU&to=TRY');
-                const fallbackData = await fallbackGold.json();
-                if (fallbackData?.rates?.TRY) {
-                    const goldPerGram = fallbackData.rates.TRY / 31.1035;
-                    document.getElementById('gold-rate').textContent = `₺${goldPerGram.toFixed(0)}`;
-                    logger.log('✅ Altın fiyatı güncellendi (fallback)');
+            // Euro
+            if (genelparaData.EUR) {
+                document.getElementById('eur-rate').textContent = `₺${parseFloat(genelparaData.EUR.satis).toFixed(2)}`;
+                logger.log('✅ Euro: ₺' + genelparaData.EUR.satis);
+            }
+            
+            // Altın (Gram)
+            if (genelparaData.gram_altin) {
+                document.getElementById('gold-rate').textContent = `₺${parseFloat(genelparaData.gram_altin.satis).toFixed(0)}`;
+                logger.log('✅ Altın: ₺' + genelparaData.gram_altin.satis);
+            }
+            
+            // BIST 100
+            if (genelparaData.XU100) {
+                const bistPrice = parseFloat(genelparaData.XU100.satis.replace(/\./g, '').replace(',', '.'));
+                const bistElement = document.getElementById('bist-rate');
+                bistElement.textContent = bistPrice.toFixed(0);
+                
+                // Değişim yüzdesi varsa renk değiştir
+                if (genelparaData.XU100.degisim) {
+                    const change = parseFloat(genelparaData.XU100.degisim);
+                    if (change > 0) {
+                        bistElement.style.color = '#10b981'; // Yeşil
+                    } else if (change < 0) {
+                        bistElement.style.color = '#ef4444'; // Kırmızı
+                    }
                 }
-            } catch (e) {
-                logger.error('❌ Altın fallback başarısız:', e);
+                
+                logger.log('✅ BIST 100: ' + bistPrice.toFixed(0));
             }
-        }
-        
-        // BIST 100
-        if (bistData.status === 'fulfilled' && bistData.value?.chart?.result?.[0]) {
-            const result = bistData.value.chart.result[0];
-            const price = result.meta.regularMarketPrice;
-            const change = result.meta.regularMarketChange || 0;
-            const changePercent = result.meta.regularMarketChangePercent || 0;
-            
-            const bistElement = document.getElementById('bist-rate');
-            bistElement.textContent = price.toFixed(0);
-            
-            // Renk değişimi (artış/azalış)
-            if (change > 0) {
-                bistElement.style.color = '#10b981'; // Yeşil
-            } else if (change < 0) {
-                bistElement.style.color = '#ef4444'; // Kırmızı
-            }
-            
-            logger.log(`✅ BIST 100: ${price.toFixed(0)} (${change > 0 ? '+' : ''}${changePercent.toFixed(2)}%)`);
-        } else if (bistData.status === 'rejected') {
-            logger.warn('⚠️ BIST 100 verisi yüklenemedi');
         }
         
         // Cache'e kaydet
@@ -135,6 +110,12 @@ async function updateFinancialData() {
         
     } catch (error) {
         logger.error('❌ Finansal veri yüklenemedi:', error);
+        
+        // Hata durumunda göster
+        document.getElementById('usd-rate').textContent = '-';
+        document.getElementById('eur-rate').textContent = '-';
+        document.getElementById('gold-rate').textContent = '-';
+        document.getElementById('bist-rate').textContent = '-';
     }
 }
 
