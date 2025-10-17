@@ -54,93 +54,10 @@ const pauseIcon = document.querySelector('.pause-icon');
 
 // Elements loaded successfully
 
-// Financial Data Functions - 100% FREE, CORS-FRIENDLY for GitHub Pages!
-
-async function updateFinancialData() {
-    try {
-        const timestamp = Date.now();
-        logger.log('📊 Finansal veriler güncelleniyor... (' + new Date().toLocaleTimeString('tr-TR') + ')');
-        
-        // GenelPara API - Türkiye'ye özel, CORS-friendly, ücretsiz
-        const genelparaResponse = await fetch('https://api.genelpara.com/embed/doviz.json');
-        const genelparaData = await genelparaResponse.json();
-        
-        if (genelparaData) {
-            // Dolar
-            if (genelparaData.USD) {
-                document.getElementById('usd-rate').textContent = `₺${parseFloat(genelparaData.USD.satis).toFixed(2)}`;
-                logger.log('✅ Dolar: ₺' + genelparaData.USD.satis);
-            }
-            
-            // Euro
-            if (genelparaData.EUR) {
-                document.getElementById('eur-rate').textContent = `₺${parseFloat(genelparaData.EUR.satis).toFixed(2)}`;
-                logger.log('✅ Euro: ₺' + genelparaData.EUR.satis);
-            }
-            
-            // Altın (Gram)
-            if (genelparaData.gram_altin) {
-                document.getElementById('gold-rate').textContent = `₺${parseFloat(genelparaData.gram_altin.satis).toFixed(0)}`;
-                logger.log('✅ Altın: ₺' + genelparaData.gram_altin.satis);
-            }
-            
-            // BIST 100
-            if (genelparaData.XU100) {
-                const bistPrice = parseFloat(genelparaData.XU100.satis.replace(/\./g, '').replace(',', '.'));
-                const bistElement = document.getElementById('bist-rate');
-                bistElement.textContent = bistPrice.toFixed(0);
-                
-                // Değişim yüzdesi varsa renk değiştir
-                if (genelparaData.XU100.degisim) {
-                    const change = parseFloat(genelparaData.XU100.degisim);
-                    if (change > 0) {
-                        bistElement.style.color = '#10b981'; // Yeşil
-                    } else if (change < 0) {
-                        bistElement.style.color = '#ef4444'; // Kırmızı
-                    }
-                }
-                
-                logger.log('✅ BIST 100: ' + bistPrice.toFixed(0));
-            }
-        }
-        
-        // Cache'e kaydet
-        localStorage.setItem('financialDataTimestamp', timestamp);
-        localStorage.setItem('lastUpdateTime', new Date().toLocaleTimeString('tr-TR'));
-        
-    } catch (error) {
-        logger.error('❌ Finansal veri yüklenemedi:', error);
-        
-        // Hata durumunda göster
-        document.getElementById('usd-rate').textContent = '-';
-        document.getElementById('eur-rate').textContent = '-';
-        document.getElementById('gold-rate').textContent = '-';
-        document.getElementById('bist-rate').textContent = '-';
-    }
-}
-
-function shouldUpdateFinancialData() {
-    const lastUpdate = localStorage.getItem('financialDataTimestamp');
-    if (!lastUpdate) return true;
-    
-    const now = Date.now();
-    const thirtySeconds = 30 * 1000; // 30 saniye
-    
-    return (now - parseInt(lastUpdate)) > thirtySeconds;
-}
-
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     initializeEventListeners();
     checkAudioAvailability();
-    
-    // Finansal verileri hemen yükle
-    updateFinancialData();
-    
-    // Her 30 saniyede bir güncelle (gerçek zamanlı benzeri)
-    setInterval(() => {
-        updateFinancialData();
-    }, 30 * 1000); // 30 saniye
 });
 
 // Event Listeners
