@@ -230,11 +230,11 @@ body.player-active {
 
 /* Categories Container */
 .categories-container {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     width: 100%;
-    max-width: 450px;
+    max-width: 950px;
     margin: 0 auto;
 }
 
@@ -287,6 +287,7 @@ body.player-active {
     position: relative;
     min-height: 85px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    grid-column: 1 / -1;
 }
 
 .contact-card:hover {
