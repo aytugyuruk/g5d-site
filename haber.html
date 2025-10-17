@@ -96,28 +96,36 @@
             margin: 24px 0 12px 0;
         }
 
-        /* News Items Styling - Simple */
+        /* News Items Styling - Clean & Modern */
         .news-item {
-            margin: 20px 0;
-            padding: 16px 0;
-            border-bottom: 1px solid #e2e8f0;
+            margin: 0 0 24px 0;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #333366;
+            transition: all 0.2s ease;
+        }
+
+        .news-item:hover {
+            background: #f1f5f9;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .news-item:last-child {
-            border-bottom: none;
+            margin-bottom: 0;
         }
 
         .news-title {
             color: #1e293b;
-            line-height: 1.6;
-            margin: 0 0 8px 0;
-            font-size: 1rem;
+            line-height: 1.5;
+            margin: 0 0 10px 0;
+            font-size: 1.05rem;
             font-weight: 700;
         }
 
         .news-description {
-            color: #4b5563;
-            line-height: 1.6;
+            color: #475569;
+            line-height: 1.7;
             margin: 0;
             font-size: 0.95rem;
         }
@@ -203,8 +211,16 @@
             }
             
             .news-item {
-                margin: 16px 0;
-                padding: 12px 0;
+                margin: 0 0 16px 0;
+                padding: 16px;
+            }
+            
+            .news-title {
+                font-size: 1rem;
+            }
+            
+            .news-description {
+                font-size: 0.9rem;
             }
             
             .news-content {
@@ -340,17 +356,17 @@
                 
                 // Check if it's a title (starts with •)
                 if (trimmed.startsWith('•')) {
-                    currentTitle = trimmed.substring(1).trim(); // Remove "•"
+                    currentTitle = trimmed.substring(1).trim(); // Remove "•" and get clean title
                 }
                 // Check if it's a description (starts with →)
                 else if (trimmed.startsWith('→')) {
-                    const description = trimmed.substring(1).trim(); // Remove "→"
+                    const description = trimmed.substring(1).trim(); // Remove "→" and get clean description
                     
-                    // Create news item with title (bold) and description
+                    // Create news item with clean title (bold) and description
                     formattedContent += `
                         <div class="news-item">
-                            <p class="news-title">${currentTitle}</p>
-                            <p class="news-description">${description}</p>
+                            <div class="news-title">${currentTitle}</div>
+                            <div class="news-description">${description}</div>
                         </div>
                     `;
                     currentTitle = ''; // Reset for next item
@@ -364,7 +380,7 @@
                     const newsContent = trimmed.substring(2); // Remove "- "
                     formattedContent += `
                         <div class="news-item">
-                            <p class="news-content">${newsContent}</p>
+                            <div class="news-content">${newsContent}</div>
                         </div>
                     `;
                 }
