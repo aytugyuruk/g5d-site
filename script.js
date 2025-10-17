@@ -25,8 +25,8 @@ const CATEGORY_MAPPING = {
     'gundem': 'gunun-mansetleri',
     'ekonomi': 'ekonomi',
     'spor': 'spor',
-    'magazin': 'magazin',
-    'politika': 'politika'
+    'bilim-teknoloji': 'bilim-teknoloji',
+    'dunya': 'dunya'
 };
 
 // Audio Player State
@@ -158,8 +158,8 @@ async function loadAndPlayAudio(category) {
             'gundem': 'Gündem',
             'ekonomi': 'Ekonomi',
             'spor': 'Spor',
-            'magazin': 'Magazin',
-            'politika': 'Politika'
+            'bilim-teknoloji': 'Bilim-Teknoloji',
+            'dunya': 'Dünya'
         };
         
         playerTitle.textContent = categoryNames[category];
@@ -249,8 +249,8 @@ function showLoadingState(category) {
         'gundem': 'Gündem',
         'ekonomi': 'Ekonomi',
         'spor': 'Spor',
-        'magazin': 'Magazin',
-        'politika': 'Politika'
+        'bilim-teknoloji': 'Bilim-Teknoloji',
+        'dunya': 'Dünya'
     };
     
     playerTitle.textContent = `${categoryNames[category]} yükleniyor...`;
@@ -274,8 +274,8 @@ function showErrorWithRetry(category, error) {
         'gundem': 'Gündem',
         'ekonomi': 'Ekonomi',
         'spor': 'Spor',
-        'magazin': 'Magazin',
-        'politika': 'Politika'
+        'bilim-teknoloji': 'Bilim-Teknoloji',
+        'dunya': 'Dünya'
     };
     
     const errorMessage = `
@@ -344,8 +344,8 @@ async function loadAndReadContent(category) {
             'gundem': 'Gündem',
             'ekonomi': 'Ekonomi',
             'spor': 'Spor',
-            'magazin': 'Magazin',
-            'politika': 'Politika'
+            'bilim-teknoloji': 'Bilim-Teknoloji',
+            'dunya': 'Dünya'
         };
         
         const errorMessage = `
@@ -506,7 +506,7 @@ function togglePlaybackSpeed() {
 
 // Check audio availability (optional feature)
 async function checkAudioAvailability() {
-    const categories = ['gundem', 'ekonomi', 'spor', 'magazin', 'politika'];
+    const categories = ['gundem', 'ekonomi', 'spor', 'bilim-teknoloji', 'dunya'];
     
     logger.log('🔍 Audio dosyalarının varlığı kontrol ediliyor...');
     

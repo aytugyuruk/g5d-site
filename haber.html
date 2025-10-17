@@ -107,6 +107,21 @@
             border-bottom: none;
         }
 
+        .news-title {
+            color: #1e293b;
+            line-height: 1.6;
+            margin: 0 0 8px 0;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .news-description {
+            color: #4b5563;
+            line-height: 1.6;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
         .news-content {
             color: #1e293b;
             line-height: 1.6;
@@ -249,8 +264,8 @@
             'gundem': 'gunun-mansetleri',
             'ekonomi': 'ekonomi',
             'spor': 'spor',
-            'magazin': 'magazin',
-            'politika': 'politika'
+            'bilim-teknoloji': 'bilim-teknoloji',
+            'dunya': 'dunya'
         };
 
         // Category names
@@ -258,8 +273,8 @@
             'gundem': 'Gündem',
             'ekonomi': 'Ekonomi',
             'spor': 'Spor',
-            'magazin': 'Magazin',
-            'politika': 'Politika'
+            'bilim-teknoloji': 'Bilim-Teknoloji',
+            'dunya': 'Dünya'
         };
 
         // Get URL parameters
@@ -314,30 +329,44 @@
         // Format text content
         function formatTextContent(text) {
             // Split by lines and process each line
-            const lines = text.split('\n').filter(line => line.trim());
+            const lines = text.split('\n').map(line => line.trim()).filter(line => line);
             
             let formattedContent = '';
+            let currentTitle = '';
             
             lines.forEach(line => {
                 const trimmed = line.trim();
                 if (!trimmed) return;
                 
-                // Check if it's a news item (starts with -)
-                if (trimmed.startsWith('- ')) {
-                    const newsContent = trimmed.substring(2); // Remove "- "
+                // Check if it's a title (starts with •)
+                if (trimmed.startsWith('•')) {
+                    currentTitle = trimmed.substring(1).trim(); // Remove "•"
+                }
+                // Check if it's a description (starts with →)
+                else if (trimmed.startsWith('→')) {
+                    const description = trimmed.substring(1).trim(); // Remove "→"
                     
-                    // Always create a news item, regardless of title structure
+                    // Create news item with title (bold) and description
+                    formattedContent += `
+                        <div class="news-item">
+                            <p class="news-title">${currentTitle}</p>
+                            <p class="news-description">${description}</p>
+                        </div>
+                    `;
+                    currentTitle = ''; // Reset for next item
+                }
+                // Check if it's a section heading (starts with #)
+                else if (trimmed.startsWith('#')) {
+                    formattedContent += `<h2 class="section-title">${trimmed.replace('#', '').trim()}</h2>`;
+                }
+                // Check if it's an old format news item (starts with -)
+                else if (trimmed.startsWith('- ')) {
+                    const newsContent = trimmed.substring(2); // Remove "- "
                     formattedContent += `
                         <div class="news-item">
                             <p class="news-content">${newsContent}</p>
                         </div>
                     `;
-                } else if (trimmed.startsWith('#')) {
-                    // Markdown style heading
-                    formattedContent += `<h2 class="section-title">${trimmed.replace('#', '').trim()}</h2>`;
-                } else {
-                    // Regular paragraph
-                    formattedContent += `<p class="news-content">${trimmed}</p>`;
                 }
             });
             
