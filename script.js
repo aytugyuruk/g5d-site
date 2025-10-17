@@ -59,69 +59,71 @@ const METALPRICE_API_KEY = 'ea1fd10a4e5d55ff4906ad4c46f0b3ca'; // MetalPriceAPI 
 
 async function updateFinancialData() {
     try {
-        logger.log('📊 Finansal veriler yükleniyor...');
+        const timestamp = Date.now();
+        logger.log('📊 Finansal veriler güncelleniyor... (' + new Date().toLocaleTimeString('tr-TR') + ')');
         
-        // Döviz kurları (ExchangeRate-API - Ücretsiz, Key yok)
-        const currencyResponse = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-        const currencyData = await currencyResponse.json();
-        
-        if (currencyData && currencyData.rates) {
-            const tryRate = currencyData.rates.TRY;
+        // Paralel olarak tüm API'leri çağır (daha hızlı)
+        const [currencyData, goldData, bistData] = await Promise.allSettled([
+            // Döviz kurları
+            fetch('https://api.exchangerate-api.com/v4/latest/USD')
+                .then(r => r.json()),
             
-            // Dolar
+            // Altın fiyatı
+            fetch(`https://api.metalpriceapi.com/v1/latest?api_key=${METALPRICE_API_KEY}&base=XAU&currencies=TRY`)
+                .then(r => r.json()),
+            
+            // BIST 100
+            fetch('https://query1.finance.yahoo.com/v8/finance/chart/XU100.IS?interval=1m&range=1d')
+                .then(r => r.json())
+        ]);
+        
+        // Döviz kurları
+        if (currencyData.status === 'fulfilled' && currencyData.value?.rates) {
+            const tryRate = currencyData.value.rates.TRY;
+            const eurRate = currencyData.value.rates.EUR;
+            
             document.getElementById('usd-rate').textContent = `₺${tryRate.toFixed(2)}`;
-            
-            // Euro (USD -> EUR -> TRY)
-            const eurToUsd = currencyData.rates.EUR;
-            const eurToTry = tryRate / eurToUsd;
-            document.getElementById('eur-rate').textContent = `₺${eurToTry.toFixed(2)}`;
-            
+            document.getElementById('eur-rate').textContent = `₺${(tryRate / eurRate).toFixed(2)}`;
             logger.log('✅ Döviz kurları güncellendi');
         }
         
-        // Altın fiyatı (MetalPriceAPI)
-        try {
-            const goldResponse = await fetch(`https://api.metalpriceapi.com/v1/latest?api_key=${METALPRICE_API_KEY}&base=XAU&currencies=TRY`);
-            const goldData = await goldResponse.json();
-            
-            if (goldData && goldData.rates && goldData.rates.TRY) {
-                // XAU = 1 troy ons (31.1035 gram)
-                const goldPerGram = goldData.rates.TRY / 31.1035;
-                document.getElementById('gold-rate').textContent = `₺${goldPerGram.toFixed(0)}`;
-                logger.log('✅ Altın fiyatı güncellendi');
-            }
-        } catch (goldError) {
-            logger.warn('⚠️ Altın verisi yüklenemedi:', goldError);
-            document.getElementById('gold-rate').textContent = '-';
+        // Altın fiyatı
+        if (goldData.status === 'fulfilled' && goldData.value?.rates?.TRY) {
+            const goldPerGram = goldData.value.rates.TRY / 31.1035;
+            document.getElementById('gold-rate').textContent = `₺${goldPerGram.toFixed(0)}`;
+            logger.log('✅ Altın fiyatı güncellendi');
+        } else if (goldData.status === 'rejected') {
+            logger.warn('⚠️ Altın verisi yüklenemedi');
         }
         
-        // BIST 100 (Yahoo Finance - Ücretsiz)
-        try {
-            const bistResponse = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/XU100.IS?interval=1d&range=1d');
-            const bistData = await bistResponse.json();
+        // BIST 100
+        if (bistData.status === 'fulfilled' && bistData.value?.chart?.result?.[0]) {
+            const result = bistData.value.chart.result[0];
+            const price = result.meta.regularMarketPrice;
+            const change = result.meta.regularMarketChange || 0;
+            const changePercent = result.meta.regularMarketChangePercent || 0;
             
-            if (bistData && bistData.chart && bistData.chart.result && bistData.chart.result[0]) {
-                const price = bistData.chart.result[0].meta.regularMarketPrice;
-                document.getElementById('bist-rate').textContent = price.toFixed(0);
-                logger.log('✅ BIST 100 güncellendi');
+            const bistElement = document.getElementById('bist-rate');
+            bistElement.textContent = price.toFixed(0);
+            
+            // Renk değişimi (artış/azalış)
+            if (change > 0) {
+                bistElement.style.color = '#10b981'; // Yeşil
+            } else if (change < 0) {
+                bistElement.style.color = '#ef4444'; // Kırmızı
             }
-        } catch (bistError) {
-            logger.warn('⚠️ BIST 100 verisi yüklenemedi:', bistError);
-            document.getElementById('bist-rate').textContent = '-';
+            
+            logger.log(`✅ BIST 100: ${price.toFixed(0)} (${change > 0 ? '+' : ''}${changePercent.toFixed(2)}%)`);
+        } else if (bistData.status === 'rejected') {
+            logger.warn('⚠️ BIST 100 verisi yüklenemedi');
         }
         
         // Cache'e kaydet
-        const timestamp = Date.now();
         localStorage.setItem('financialDataTimestamp', timestamp);
+        localStorage.setItem('lastUpdateTime', new Date().toLocaleTimeString('tr-TR'));
         
     } catch (error) {
         logger.error('❌ Finansal veri yüklenemedi:', error);
-        
-        // Hata durumunda göster
-        document.getElementById('usd-rate').textContent = '-';
-        document.getElementById('eur-rate').textContent = '-';
-        document.getElementById('gold-rate').textContent = '-';
-        document.getElementById('bist-rate').textContent = '-';
     }
 }
 
@@ -130,9 +132,9 @@ function shouldUpdateFinancialData() {
     if (!lastUpdate) return true;
     
     const now = Date.now();
-    const fiveMinutes = 5 * 60 * 1000; // 5 dakika
+    const thirtySeconds = 30 * 1000; // 30 saniye
     
-    return (now - parseInt(lastUpdate)) > fiveMinutes;
+    return (now - parseInt(lastUpdate)) > thirtySeconds;
 }
 
 // Initialize
@@ -140,17 +142,13 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeEventListeners();
     checkAudioAvailability();
     
-    // Finansal verileri yükle
-    if (shouldUpdateFinancialData()) {
-        updateFinancialData();
-    }
+    // Finansal verileri hemen yükle
+    updateFinancialData();
     
-    // Her 5 dakikada bir güncelle
+    // Her 30 saniyede bir güncelle (gerçek zamanlı benzeri)
     setInterval(() => {
-        if (shouldUpdateFinancialData()) {
-            updateFinancialData();
-        }
-    }, 5 * 60 * 1000);
+        updateFinancialData();
+    }, 30 * 1000); // 30 saniye
 });
 
 // Event Listeners
