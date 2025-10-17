@@ -378,14 +378,14 @@ body.player-active {
 
 /* Category Actions */
 .category-actions {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 10px;
     width: 100%;
     margin-top: 10px;
 }
 
 .action-btn {
-    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -816,6 +816,7 @@ body.player-active {
     }
     
     .category-actions {
+        grid-template-columns: 1fr 1fr;
         gap: 9px;
         margin-top: 9px;
     }
@@ -825,6 +826,7 @@ body.player-active {
         font-size: 0.9rem;
         min-height: 43px;
         gap: 7px;
+        width: 100%;
     }
 
     .category-icon {
@@ -1023,6 +1025,7 @@ body.player-active {
     }
     
     .category-actions {
+        grid-template-columns: 1fr 1fr;
         gap: 8px;
         margin-top: 8px;
     }
@@ -1034,6 +1037,7 @@ body.player-active {
         border-radius: 9px;
         gap: 6px;
         font-weight: 700;
+        width: 100%;
     }
     
     .action-btn svg {
