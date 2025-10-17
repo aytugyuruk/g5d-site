@@ -297,11 +297,6 @@ body.player-active {
     box-shadow: 0 12px 35px rgba(51, 51, 102, 0.18);
 }
 
-.contact-card:hover .category-icon {
-    transform: scale(1.1) rotate(5deg);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-}
-
 /* Category Icon - Simple Design */
 .category-icon {
     width: 56px;
@@ -356,7 +351,8 @@ body.player-active {
     color: white;
 }
 
-.category-card:hover .category-icon {
+.category-card:hover .category-icon,
+.contact-card:hover .category-icon {
     transform: scale(1.1) rotate(5deg);
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 }
