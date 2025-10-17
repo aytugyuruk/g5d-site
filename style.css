@@ -236,9 +236,9 @@ body.player-active {
     background: #ea580c;
 }
 
-/* Bilim-Teknoloji - Simple Teal */
-.category-card[data-category="bilim-teknoloji"] .category-icon {
-    background: #0d9488;
+/* Magazin - Simple Pink */
+.category-card[data-category="magazin"] .category-icon {
+    background: #db2777;
 }
 
 /* Dünya - Simple Blue */

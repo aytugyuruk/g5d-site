@@ -25,7 +25,7 @@ const CATEGORY_MAPPING = {
     'gundem': 'gunun-mansetleri',
     'ekonomi': 'ekonomi',
     'spor': 'spor',
-    'bilim-teknoloji': 'magazin',
+    'magazin': 'magazin',
     'dunya': 'dunya'
 };
 
@@ -158,7 +158,7 @@ async function loadAndPlayAudio(category) {
             'gundem': 'Gündem',
             'ekonomi': 'Ekonomi',
             'spor': 'Spor',
-            'bilim-teknoloji': 'Bilim-Teknoloji',
+            'magazin': 'Magazin',
             'dunya': 'Dünya'
         };
         
@@ -249,7 +249,7 @@ function showLoadingState(category) {
         'gundem': 'Gündem',
         'ekonomi': 'Ekonomi',
         'spor': 'Spor',
-        'bilim-teknoloji': 'Bilim-Teknoloji',
+        'magazin': 'Magazin',
         'dunya': 'Dünya'
     };
     
@@ -274,7 +274,7 @@ function showErrorWithRetry(category, error) {
         'gundem': 'Gündem',
         'ekonomi': 'Ekonomi',
         'spor': 'Spor',
-        'bilim-teknoloji': 'Bilim-Teknoloji',
+        'magazin': 'Magazin',
         'dunya': 'Dünya'
     };
     
@@ -344,7 +344,7 @@ async function loadAndReadContent(category) {
             'gundem': 'Gündem',
             'ekonomi': 'Ekonomi',
             'spor': 'Spor',
-            'bilim-teknoloji': 'Bilim-Teknoloji',
+            'magazin': 'Magazin',
             'dunya': 'Dünya'
         };
         
@@ -506,7 +506,7 @@ function togglePlaybackSpeed() {
 
 // Check audio availability (optional feature)
 async function checkAudioAvailability() {
-    const categories = ['gundem', 'ekonomi', 'spor', 'bilim-teknoloji', 'dunya'];
+    const categories = ['gundem', 'ekonomi', 'spor', 'magazin', 'dunya'];
     
     logger.log('🔍 Audio dosyalarının varlığı kontrol ediliyor...');
     
