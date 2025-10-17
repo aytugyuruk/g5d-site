@@ -347,42 +347,67 @@
             
             let formattedContent = '';
             let currentTitle = '';
+            let currentDescription = '';
             
             lines.forEach(line => {
                 const trimmed = line.trim();
                 if (!trimmed) return;
                 
-                // Check if it's a title (starts with •)
-                if (trimmed.startsWith('•')) {
-                    currentTitle = trimmed.substring(1).trim(); // Remove "•" and get clean title
-                }
-                // Check if it's a description (starts with →)
-                else if (trimmed.startsWith('→')) {
-                    const description = trimmed.substring(1).trim(); // Remove "→" and get clean description
+                // Check if it's a title (starts with ##)
+                if (trimmed.startsWith('##')) {
+                    // If we have a previous title and description, create news item
+                    if (currentTitle && currentDescription) {
+                        formattedContent += `
+                            <div class="news-item">
+                                <div class="news-title">${currentTitle}</div>
+                                <div class="news-description">${currentDescription}</div>
+                            </div>
+                        `;
+                    }
                     
-                    // Create news item with clean title (bold) and description
-                    formattedContent += `
-                        <div class="news-item">
-                            <div class="news-title">${currentTitle}</div>
-                            <div class="news-description">${description}</div>
-                        </div>
-                    `;
-                    currentTitle = ''; // Reset for next item
+                    // Set new title
+                    currentTitle = trimmed.substring(2).trim(); // Remove "##" and get clean title
+                    currentDescription = ''; // Reset description
                 }
-                // Check if it's a section heading (starts with #)
-                else if (trimmed.startsWith('#')) {
+                // Check if it's a description (not starting with #, ---, or empty)
+                else if (!trimmed.startsWith('#') && !trimmed.startsWith('---') && trimmed !== '') {
+                    // If we already have a description, append to it
+                    if (currentDescription) {
+                        currentDescription += ' ' + trimmed;
+                    } else {
+                        currentDescription = trimmed;
+                    }
+                }
+                // Check if it's a separator (---)
+                else if (trimmed.startsWith('---')) {
+                    // If we have a title and description, create news item
+                    if (currentTitle && currentDescription) {
+                        formattedContent += `
+                            <div class="news-item">
+                                <div class="news-title">${currentTitle}</div>
+                                <div class="news-description">${currentDescription}</div>
+                            </div>
+                        `;
+                    }
+                    // Reset for next item
+                    currentTitle = '';
+                    currentDescription = '';
+                }
+                // Check if it's a main section heading (starts with # but not ##)
+                else if (trimmed.startsWith('#') && !trimmed.startsWith('##')) {
                     formattedContent += `<h2 class="section-title">${trimmed.replace('#', '').trim()}</h2>`;
                 }
-                // Check if it's an old format news item (starts with -)
-                else if (trimmed.startsWith('- ')) {
-                    const newsContent = trimmed.substring(2); // Remove "- "
-                    formattedContent += `
-                        <div class="news-item">
-                            <div class="news-content">${newsContent}</div>
-                        </div>
-                    `;
-                }
             });
+            
+            // Handle the last item if exists
+            if (currentTitle && currentDescription) {
+                formattedContent += `
+                    <div class="news-item">
+                        <div class="news-title">${currentTitle}</div>
+                        <div class="news-description">${currentDescription}</div>
+                    </div>
+                `;
+            }
             
             return formattedContent;
         }
