@@ -55,7 +55,7 @@ const pauseIcon = document.querySelector('.pause-icon');
 // Elements loaded successfully
 
 // Financial Data Functions
-const METALPRICE_API_KEY = 'YOUR_METALPRICE_API_KEY'; // metalpriceapi.com/dashboard'dan alınacak
+const METALPRICE_API_KEY = 'ea1fd10a4e5d55ff4906ad4c46f0b3ca'; // MetalPriceAPI key
 
 async function updateFinancialData() {
     try {
