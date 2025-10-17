@@ -236,14 +236,14 @@ body.player-active {
     background: #ea580c;
 }
 
-/* Magazin - Simple Pink */
-.category-card[data-category="magazin"] .category-icon {
-    background: #db2777;
+/* Bilim-Teknoloji - Simple Teal */
+.category-card[data-category="bilim-teknoloji"] .category-icon {
+    background: #0d9488;
 }
 
-/* Politika - Simple Purple */
-.category-card[data-category="politika"] .category-icon {
-    background: #7c3aed;
+/* Dünya - Simple Blue */
+.category-card[data-category="dunya"] .category-icon {
+    background: #2563eb;
 }
 
 .category-icon svg {
