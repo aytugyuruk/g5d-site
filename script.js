@@ -54,8 +54,7 @@ const pauseIcon = document.querySelector('.pause-icon');
 
 // Elements loaded successfully
 
-// Financial Data Functions
-const METALPRICE_API_KEY = 'ea1fd10a4e5d55ff4906ad4c46f0b3ca'; // MetalPriceAPI key
+// Financial Data Functions - 100% FREE, NO API KEYS NEEDED!
 
 async function updateFinancialData() {
     try {
@@ -64,20 +63,20 @@ async function updateFinancialData() {
         
         // Paralel olarak tüm API'leri çağır (daha hızlı)
         const [currencyData, goldData, bistData] = await Promise.allSettled([
-            // Döviz kurları
+            // Döviz kurları (ExchangeRate-API - Ücretsiz, Key yok)
             fetch('https://api.exchangerate-api.com/v4/latest/USD')
                 .then(r => r.json()),
             
-            // Altın fiyatı
-            fetch(`https://api.metalpriceapi.com/v1/latest?api_key=${METALPRICE_API_KEY}&base=XAU&currencies=TRY`)
+            // Altın fiyatı (Exchangerate.host - Ücretsiz, Key yok)
+            fetch('https://api.exchangerate.host/latest?base=XAU&symbols=TRY')
                 .then(r => r.json()),
             
-            // BIST 100
+            // BIST 100 (Yahoo Finance - Ücretsiz)
             fetch('https://query1.finance.yahoo.com/v8/finance/chart/XU100.IS?interval=1m&range=1d')
                 .then(r => r.json())
         ]);
         
-        // Döviz kurları
+        // Döviz kurları (Dolar & Euro)
         if (currencyData.status === 'fulfilled' && currencyData.value?.rates) {
             const tryRate = currencyData.value.rates.TRY;
             const eurRate = currencyData.value.rates.EUR;
@@ -87,13 +86,25 @@ async function updateFinancialData() {
             logger.log('✅ Döviz kurları güncellendi');
         }
         
-        // Altın fiyatı
+        // Altın fiyatı (1 troy ons XAU -> TRY gram)
         if (goldData.status === 'fulfilled' && goldData.value?.rates?.TRY) {
             const goldPerGram = goldData.value.rates.TRY / 31.1035;
             document.getElementById('gold-rate').textContent = `₺${goldPerGram.toFixed(0)}`;
             logger.log('✅ Altın fiyatı güncellendi');
         } else if (goldData.status === 'rejected') {
             logger.warn('⚠️ Altın verisi yüklenemedi');
+            // Fallback: Alternatif API dene
+            try {
+                const fallbackGold = await fetch('https://api.frankfurter.app/latest?from=XAU&to=TRY');
+                const fallbackData = await fallbackGold.json();
+                if (fallbackData?.rates?.TRY) {
+                    const goldPerGram = fallbackData.rates.TRY / 31.1035;
+                    document.getElementById('gold-rate').textContent = `₺${goldPerGram.toFixed(0)}`;
+                    logger.log('✅ Altın fiyatı güncellendi (fallback)');
+                }
+            } catch (e) {
+                logger.error('❌ Altın fallback başarısız:', e);
+            }
         }
         
         // BIST 100
